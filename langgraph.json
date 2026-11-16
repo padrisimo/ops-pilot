@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "ops_pilot": "./langgraph_app.py:build_api_graph"
+  },
+  "env": ".env"
+}

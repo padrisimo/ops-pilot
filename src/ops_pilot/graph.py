@@ -13,13 +13,14 @@ from langgraph.graph import START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.types import Command
 
-from .context import AppContext, default_context
+from .context import AppContext, LazyAppContext
 from .model import build_model
 from .sandbox import DEFAULT_SANDBOX_DIR
 from .tools import build_tools
 
 DEFAULT_CHECKPOINT_DB = DEFAULT_SANDBOX_DIR / "checkpoints.sqlite"
 MEMORY_SENTINELS = {"memory", "in-memory", "none", "off"}
+DEFAULT_CHECKPOINTER = object()
 
 SYSTEM_PROMPT = """You are OpsPilot, an SRE incident commander.
 
@@ -83,12 +84,12 @@ def build_checkpointer(db_path: str | Path | None = None):
 
 
 def build_graph(
-    ctx: AppContext | None = None,
+    ctx: AppContext | LazyAppContext | None = None,
     *,
     model=None,
-    checkpointer=None,
+    checkpointer=DEFAULT_CHECKPOINTER,
 ):
-    context = ctx or default_context()
+    context = ctx or LazyAppContext()
     tools = build_tools(context)
     chat_model = model or build_model()
     model_with_tools = chat_model.bind_tools(tools)
@@ -105,7 +106,19 @@ def build_graph(
     builder.add_edge(START, "agent")
     builder.add_conditional_edges("agent", tools_condition)
     builder.add_edge("tools", "agent")
-    return builder.compile(checkpointer=checkpointer or build_checkpointer())
+
+    if checkpointer is DEFAULT_CHECKPOINTER:
+        checkpointer = build_checkpointer()
+    return builder.compile(checkpointer=checkpointer)
+
+
+def build_api_graph():
+    """LangGraph CLI / LangSmith Studio factory.
+
+    The LangGraph API owns persistence and injects its own checkpointer, so this
+    factory compiles the graph without the local SQLite saver.
+    """
+    return build_graph(checkpointer=None)
 
 
 def thread_config(thread_id: str) -> dict[str, Any]:

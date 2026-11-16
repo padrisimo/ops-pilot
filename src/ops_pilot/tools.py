@@ -9,7 +9,7 @@ from langchain_core.tools import tool
 from langgraph.types import interrupt
 
 from .analysis import _log_patterns, analyze_incident as run_analysis, metric_report
-from .context import AppContext
+from .context import AppContext, LazyAppContext
 from .data import DataError, iso
 from .sandbox import SandboxError
 
@@ -33,7 +33,7 @@ def _decision(value: Any) -> str:
     return "invalid"
 
 
-def build_tools(ctx: AppContext) -> list:
+def build_tools(ctx: AppContext | LazyAppContext) -> list:
     @tool
     def list_incidents(status: str = "open") -> dict:
         """List incidents, optionally filtered by status (open, resolved, ...)."""
