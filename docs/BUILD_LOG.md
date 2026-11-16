@@ -179,7 +179,7 @@ Run:
 uv run pytest
 ```
 
-Result at the time of writing: **39 tests passing**.
+Result at the time of writing: **43 tests passing**.
 
 ## Step 8 — SQLite by default
 
@@ -192,6 +192,45 @@ The checkpointer now defaults to `sandbox/checkpoints.sqlite` via `SqliteSaver`.
 A dedicated test proves the important property: a remediation pauses at
 `interrupt()`, the graph and checkpoint connection are recreated, the pending
 approval is still readable, and resuming it applies the draft exactly once.
+
+## Step 9 — Free models and LangGraph Studio
+
+The project now defaults to OpenRouter's free auto-router:
+
+```bash
+MODEL=openrouter:free          # alias for openrouter/openrouter/free
+OPENROUTER_API_KEY=...
+```
+
+`model.py` normalises `openrouter:free` and `openrouter:` to the free router, keeps
+pinned `:free` model IDs intact, and adds OpenRouter attribution headers. Tests cover
+the alias mapping and the missing-key error without making network calls.
+
+For visual debugging, `langgraph-cli[inmem]` was added as a dev dependency along with
+`langgraph.json` and `langgraph_app.py`:
+
+```bash
+uv run langgraph dev
+```
+
+The API server exposes the graph as `ops_pilot` and injects its own checkpointer.
+`build_api_graph()` therefore compiles without the local SQLite saver, while the CLI
+and Streamlit keep using it.
+
+### Blocking-call bug
+
+The first `langgraph dev` run failed inside a real run:
+
+```text
+BlockingError: Blocking call to os.mkdir
+```
+
+`build_graph()` created the data store and sandbox at graph-construction time, but
+the LangGraph API builds graphs inside an async event loop and rejects synchronous
+I/O there. The fix was a lazy context: `LazyAppContext` defers JSON loading and
+directory creation until a tool actually runs, and sync tools execute in a worker
+thread. The server then completed an end-to-end run: `list_incidents` returned the
+five open incidents and the model replied `5`.
 
 ## Bugs found while testing
 

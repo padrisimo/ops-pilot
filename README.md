@@ -72,8 +72,22 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync
-cp .env.example .env    # add OPENAI_API_KEY (or configure OpenRouter)
+cp .env.example .env    # add OPENROUTER_API_KEY (free key)
 ```
+
+### LangGraph Studio (optional)
+
+The repository includes a `langgraph.json`, so you can inspect and replay runs in
+LangGraph Studio / LangSmith:
+
+```bash
+uv run langgraph dev
+```
+
+Open the URL it prints (or let it open the browser). The graph is exposed as
+`ops_pilot`; the API server owns persistence, so this entrypoint compiles without
+the local SQLite saver. If `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` are set,
+each run is also traced in LangSmith.
 
 ### Streamlit UI
 
@@ -112,17 +126,31 @@ checkpoint database.
 
 ## Models
 
-`MODEL` accepts a LangChain model spec. Defaults to `openai:gpt-4o-mini`.
+The default is OpenRouter's **free auto-router**, so a free OpenRouter key is enough:
 
 ```bash
-MODEL=openai:gpt-4o-mini
-# or
-MODEL=openrouter:anthropic/claude-3.5-sonnet
+MODEL=openrouter:free
+# equivalent: MODEL=openrouter:openrouter/free
 OPENROUTER_API_KEY=...
 ```
 
-The LLM is only used in the `agent` node. Tools, analysis and the sandbox work
-without any provider key, which is what the test suite exercises.
+To pin a specific free model:
+
+```bash
+MODEL=openrouter:<vendor>/<model>:free
+```
+
+OpenAI is still supported:
+
+```bash
+MODEL=openai:gpt-4o-mini
+OPENAI_API_KEY=...
+```
+
+Free OpenRouter models are rate-limited and may vary in tool-calling quality. OpsPilot
+requires tool calling, so the free auto-router is the safest default. The LLM is only
+used in the `agent` node: tools, analysis and the sandbox work without any provider
+key, which is what the test suite exercises.
 
 ## Architecture
 
@@ -133,10 +161,13 @@ src/ops_pilot/
 ├── sandbox.py    drafts, append-only ledger, rollback, audit log
 ├── context.py    AppContext (data + sandbox) dependency container
 ├── tools.py      12 LangChain tools, including approval-gated writes
-├── model.py      OpenAI / OpenRouter model construction
+├── model.py      OpenRouter free / OpenAI model construction
 ├── graph.py      StateGraph(MessagesState) + ToolNode + checkpointer
 ├── cli.py        terminal REPL
 └── ui.py         Streamlit chat UI
+
+langgraph.json       LangGraph CLI / Studio configuration
+langgraph_app.py     API entrypoint without a local checkpointer
 ```
 
 The graph is hand-built rather than prebuilt:
