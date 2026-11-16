@@ -45,7 +45,7 @@ around the opposite idea:
   produce a remediation. The agent asks a focused question instead.
 - **Approval is a graph primitive.** `apply_remediation` and `rollback_remediation`
   call LangGraph's `interrupt()` and resume with `Command(resume="approve" | "reject")`.
-  The pause survives process boundaries when a SQLite checkpointer is enabled.
+  The pause survives process restarts because state is checkpointed in SQLite.
 - **The sandbox is append-only.** Rejections write nothing to the ledger; rollbacks
   append a reversal and mark the original action; repeated calls are explicit no-ops.
 - **`data/` is read-only.** All runtime writes go to `sandbox/`.
@@ -93,14 +93,22 @@ uv run ops-pilot
 Commands: `/incidents`, `/audit`, `/new`, `/quit`. When the graph pauses, the CLI
 prints the approval payload and asks `Approve? [y/N]`.
 
-### Optional persistence
+### Persistence
 
-By default the checkpointer is in memory. Set the following to keep threads and
-pending approvals across restarts:
+LangGraph state — conversations, tool messages and pending approvals — is stored in
+`sandbox/checkpoints.sqlite` by default. Restarting the CLI or the Streamlit app
+resumes the same thread, including an approval that was waiting for a human.
 
 ```bash
+# default; relative paths are resolved from the working directory
 OPS_PILOT_CHECKPOINT_DB=sandbox/checkpoints.sqlite
+
+# opt out of persistence (for ephemeral runs and tests)
+OPS_PILOT_CHECKPOINT_DB=memory
 ```
+
+The test suite uses `MemorySaver` explicitly, so it never touches the real
+checkpoint database.
 
 ## Models
 
@@ -185,6 +193,7 @@ Created at runtime and ignored by git:
 | `sandbox/drafts.json` | proposed remediations and their status |
 | `sandbox/ledger.json` | append-only applied actions and reversals |
 | `sandbox/audit_log.json` | `propose`, `apply`, `reject`, `rollback`, `*_noop` events |
+| `sandbox/checkpoints.sqlite` | LangGraph threads, messages, tool state and pending interrupts |
 
 Statuses: `pending → applied → rolled_back`, or `pending → rejected`.
 
@@ -195,9 +204,9 @@ uv run pytest
 ```
 
 The suite covers data loading, analysis for all five incidents, sandbox validation
-and idempotency, and the real approval flow: a minimal `StateGraph` with `ToolNode`
-invokes the tools, pauses on `interrupt()`, and resumes with `Command(...)` — no LLM
-or API key required.
+and idempotency, SQLite checkpoint persistence, and the real approval flow: a
+minimal `StateGraph` with `ToolNode` invokes the tools, pauses on `interrupt()`, and
+resumes with `Command(...)` — no LLM or API key required.
 
 ## Design notes
 
@@ -216,5 +225,5 @@ or API key required.
 
 - Telemetry is mocked and static; there is no live monitoring integration.
 - The sandbox "applies" actions by writing JSON records, not by calling real APIs.
-- SQLite checkpointing is optional and intended for local persistence.
+- Checkpointing is local SQLite; there is no shared checkpoint backend.
 - Hypothesis rules are deliberately simple and explainable, not a general RCA engine.

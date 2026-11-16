@@ -140,8 +140,9 @@ builder.add_edge("tools", "agent")
 ```
 
 `graph.py` also provides `pending_interrupts()` and `resume()`, used by both
-interfaces. `MemorySaver` is the default checkpointer; setting
-`OPS_PILOT_CHECKPOINT_DB` switches to `SqliteSaver`.
+interfaces. State is checkpointed to `sandbox/checkpoints.sqlite` by default via
+`SqliteSaver`, so conversations and pending approvals survive a restart. Setting
+`OPS_PILOT_CHECKPOINT_DB=memory` switches to `MemorySaver` for ephemeral runs.
 
 ## Step 6 — Interfaces
 
@@ -169,6 +170,8 @@ The suite avoids depending on an LLM or API key:
   `apply_remediation` / `rollback_remediation`, asserts the graph pauses, then
   resumes with `Command(resume="approve" | "reject")`. This exercises the actual
   LangGraph interrupt protocol without an LLM.
+- `test_checkpointer.py` verifies that SQLite state survives a new saver instance,
+  and that the `memory` sentinel falls back to `MemorySaver`.
 
 Run:
 
@@ -176,7 +179,19 @@ Run:
 uv run pytest
 ```
 
-Result at the time of writing: **34 tests passing**.
+Result at the time of writing: **39 tests passing**.
+
+## Step 8 — SQLite by default
+
+The first version used `MemorySaver` and treated SQLite as opt-in. That is a weak
+demo: a pending approval disappears when the process exits, which is exactly the
+situation where persistence matters.
+
+The checkpointer now defaults to `sandbox/checkpoints.sqlite` via `SqliteSaver`.
+`OPS_PILOT_CHECKPOINT_DB` can point somewhere else, and the value `memory` opts out.
+A dedicated test proves the important property: a remediation pauses at
+`interrupt()`, the graph and checkpoint connection are recreated, the pending
+approval is still readable, and resuming it applies the draft exactly once.
 
 ## Bugs found while testing
 
