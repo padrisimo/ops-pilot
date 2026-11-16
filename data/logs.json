@@ -1,0 +1,177 @@
+[
+  {
+    "log_id": "L-1000",
+    "ts": "2026-11-14T14:00:00Z",
+    "service_id": "checkout-api",
+    "level": "INFO",
+    "message": "request completed in 221ms"
+  },
+  {
+    "log_id": "L-1001",
+    "ts": "2026-11-14T14:05:30Z",
+    "service_id": "checkout-api",
+    "level": "ERROR",
+    "message": "upstream timeout calling pricing-api after 800ms"
+  },
+  {
+    "log_id": "L-1002",
+    "ts": "2026-11-14T14:06:10Z",
+    "service_id": "checkout-api",
+    "level": "ERROR",
+    "message": "context deadline exceeded calling pricing-api"
+  },
+  {
+    "log_id": "L-1003",
+    "ts": "2026-11-14T14:07:00Z",
+    "service_id": "checkout-api",
+    "level": "WARN",
+    "message": "retry budget exhausted for pricing-api"
+  },
+  {
+    "log_id": "L-1004",
+    "ts": "2026-11-14T14:08:00Z",
+    "service_id": "checkout-api",
+    "level": "ERROR",
+    "message": "HTTP 504 received from pricing-api"
+  },
+  {
+    "log_id": "L-1005",
+    "ts": "2026-11-14T14:09:00Z",
+    "service_id": "checkout-api",
+    "level": "ERROR",
+    "message": "upstream timeout calling pricing-api after 800ms"
+  },
+  {
+    "log_id": "L-1006",
+    "ts": "2026-11-14T14:10:00Z",
+    "service_id": "checkout-api",
+    "level": "WARN",
+    "message": "circuit breaker OPEN for pricing-api"
+  },
+  {
+    "log_id": "L-1100",
+    "ts": "2026-11-14T09:09:00Z",
+    "service_id": "payments-db",
+    "level": "INFO",
+    "message": "pool size 100, active connections 44"
+  },
+  {
+    "log_id": "L-1101",
+    "ts": "2026-11-14T09:10:30Z",
+    "service_id": "payments-db",
+    "level": "ERROR",
+    "message": "FATAL: remaining connection slots are reserved"
+  },
+  {
+    "log_id": "L-1102",
+    "ts": "2026-11-14T09:11:00Z",
+    "service_id": "payments-db",
+    "level": "ERROR",
+    "message": "pool timeout after 5000ms waiting for connection"
+  },
+  {
+    "log_id": "L-1103",
+    "ts": "2026-11-14T09:12:00Z",
+    "service_id": "payments-db",
+    "level": "WARN",
+    "message": "active connections 99/100"
+  },
+  {
+    "log_id": "L-1104",
+    "ts": "2026-11-14T09:13:00Z",
+    "service_id": "payments-db",
+    "level": "ERROR",
+    "message": "could not obtain connection from pool"
+  },
+  {
+    "log_id": "L-1105",
+    "ts": "2026-11-14T09:14:00Z",
+    "service_id": "payments-db",
+    "level": "ERROR",
+    "message": "pool timeout after 5000ms waiting for connection"
+  },
+  {
+    "log_id": "L-1201",
+    "ts": "2026-11-14T16:20:10Z",
+    "service_id": "pricing-api",
+    "level": "ERROR",
+    "message": "FeatureFlagError: new-pricing flag returned 500"
+  },
+  {
+    "log_id": "L-1202",
+    "ts": "2026-11-14T16:21:00Z",
+    "service_id": "pricing-api",
+    "level": "ERROR",
+    "message": "NullPointerException in price resolver"
+  },
+  {
+    "log_id": "L-1203",
+    "ts": "2026-11-14T16:22:00Z",
+    "service_id": "pricing-api",
+    "level": "ERROR",
+    "message": "new-pricing flag evaluation failed for cart 12345"
+  },
+  {
+    "log_id": "L-1204",
+    "ts": "2026-11-14T16:23:00Z",
+    "service_id": "pricing-api",
+    "level": "ERROR",
+    "message": "FeatureFlagError: new-pricing flag returned 500"
+  },
+  {
+    "log_id": "L-1205",
+    "ts": "2026-11-14T16:24:00Z",
+    "service_id": "pricing-api",
+    "level": "WARN",
+    "message": "falling back to legacy pricing"
+  },
+  {
+    "log_id": "L-1301",
+    "ts": "2026-11-14T11:40:10Z",
+    "service_id": "search-api",
+    "level": "ERROR",
+    "message": "disk usage 91% on /var/lib/search"
+  },
+  {
+    "log_id": "L-1302",
+    "ts": "2026-11-14T11:41:00Z",
+    "service_id": "search-api",
+    "level": "WARN",
+    "message": "segment merge delayed because of low disk space"
+  },
+  {
+    "log_id": "L-1303",
+    "ts": "2026-11-14T11:42:00Z",
+    "service_id": "search-api",
+    "level": "ERROR",
+    "message": "disk usage 92% on /var/lib/search"
+  },
+  {
+    "log_id": "L-1304",
+    "ts": "2026-11-14T11:43:00Z",
+    "service_id": "search-api",
+    "level": "WARN",
+    "message": "log rotation job has not completed in 26 hours"
+  },
+  {
+    "log_id": "L-1401",
+    "ts": "2026-11-14T07:31:00Z",
+    "service_id": "auth-api",
+    "level": "INFO",
+    "message": "p95 latency 151ms within 200ms SLO"
+  },
+  {
+    "log_id": "L-1402",
+    "ts": "2026-11-14T07:32:00Z",
+    "service_id": "auth-api",
+    "level": "INFO",
+    "message": "token validation healthy"
+  },
+  {
+    "log_id": "L-1403",
+    "ts": "2026-11-14T07:33:00Z",
+    "service_id": "auth-api",
+    "level": "DEBUG",
+    "message": "cache hit ratio 0.94"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "service_id": "checkout-api",
+    "name": "Checkout API",
+    "owner": "payments",
+    "tier": 1,
+    "dependencies": ["payments-db", "pricing-api"],
+    "runbook_id": "RB-001"
+  },
+  {
+    "service_id": "payments-db",
+    "name": "Payments Database",
+    "owner": "payments",
+    "tier": 1,
+    "dependencies": [],
+    "runbook_id": "RB-002"
+  },
+  {
+    "service_id": "pricing-api",
+    "name": "Pricing API",
+    "owner": "catalog",
+    "tier": 1,
+    "dependencies": [],
+    "runbook_id": "RB-003"
+  },
+  {
+    "service_id": "search-api",
+    "name": "Search API",
+    "owner": "discovery",
+    "tier": 2,
+    "dependencies": [],
+    "runbook_id": "RB-004"
+  },
+  {
+    "service_id": "auth-api",
+    "name": "Auth API",
+    "owner": "identity",
+    "tier": 1,
+    "dependencies": [],
+    "runbook_id": "RB-005"
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "incident_id": "INC-1001",
+    "title": "Checkout p95 latency spike",
+    "service_id": "checkout-api",
+    "severity": "SEV-1",
+    "status": "open",
+    "started_at": "2026-11-14T14:05:00Z",
+    "detected_at": "2026-11-14T14:07:00Z",
+    "window_minutes": 60,
+    "symptom": "p95 latency jumped from about 220 ms to more than 1,200 ms and 5xx errors are rising."
+  },
+  {
+    "incident_id": "INC-1002",
+    "title": "Payments DB connection pool exhaustion",
+    "service_id": "payments-db",
+    "severity": "SEV-1",
+    "status": "open",
+    "started_at": "2026-11-14T09:10:00Z",
+    "detected_at": "2026-11-14T09:12:00Z",
+    "window_minutes": 60,
+    "symptom": "Checkout requests are failing because the payments database cannot hand out connections."
+  },
+  {
+    "incident_id": "INC-1003",
+    "title": "Pricing API 5xx spike",
+    "service_id": "pricing-api",
+    "severity": "SEV-1",
+    "status": "open",
+    "started_at": "2026-11-14T16:20:00Z",
+    "detected_at": "2026-11-14T16:22:00Z",
+    "window_minutes": 45,
+    "symptom": "Pricing API error rate moved from 0.1% to above 8% after a feature flag change."
+  },
+  {
+    "incident_id": "INC-1004",
+    "title": "Search disk pressure",
+    "service_id": "search-api",
+    "severity": "SEV-2",
+    "status": "open",
+    "started_at": "2026-11-14T11:40:00Z",
+    "detected_at": "2026-11-14T11:42:00Z",
+    "window_minutes": 60,
+    "symptom": "Search nodes are above 90% disk usage and segment merges are delayed."
+  },
+  {
+    "incident_id": "INC-1005",
+    "title": "Auth latency complaint",
+    "service_id": "auth-api",
+    "severity": "SEV-3",
+    "status": "open",
+    "started_at": "2026-11-14T07:30:00Z",
+    "detected_at": "2026-11-14T07:32:00Z",
+    "window_minutes": 30,
+    "symptom": "A customer reported slow login, but no alert fired and the service is inside its SLO."
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "runbook_id": "RB-001",
+    "service_id": "checkout-api",
+    "title": "Checkout latency triage",
+    "steps": [
+      "Check p95 latency and 5xx rate against the last 30 minutes.",
+      "Inspect deploys from the two hours before the spike.",
+      "If the spike started within 30 minutes of a deploy, roll back that deploy.",
+      "Verify p95 latency and error rate for 15 minutes after the change."
+    ]
+  },
+  {
+    "runbook_id": "RB-002",
+    "service_id": "payments-db",
+    "title": "Connection pool exhaustion",
+    "steps": [
+      "Compare active connections and pool wait time with the baseline.",
+      "Check whether query volume or client retries increased.",
+      "Raise the pool ceiling and recycle idle connections.",
+      "Verify checkout success rate and pool wait time."
+    ]
+  },
+  {
+    "runbook_id": "RB-003",
+    "service_id": "pricing-api",
+    "title": "Pricing 5xx triage",
+    "steps": [
+      "Check error rate and recent feature flag changes.",
+      "If a flag rollout precedes the errors, disable the flag.",
+      "Confirm that traffic falls back to legacy pricing.",
+      "Verify 5xx rate for 15 minutes before re-enabling the flag."
+    ]
+  },
+  {
+    "runbook_id": "RB-004",
+    "service_id": "search-api",
+    "title": "Disk pressure",
+    "steps": [
+      "Check disk usage and segment merge health.",
+      "Confirm whether log rotation or index cleanup failed.",
+      "Rotate logs and remove expired indices.",
+      "Verify disk usage falls below 80%."
+    ]
+  },
+  {
+    "runbook_id": "RB-005",
+    "service_id": "auth-api",
+    "title": "Auth latency investigation",
+    "steps": [
+      "Compare p95 latency and error rate with the SLO.",
+      "Inspect traces for the reported request if one is available.",
+      "If metrics are normal, widen the time window before proposing a change.",
+      "Do not change production without a high-confidence cause."
+    ]
+  }
+]

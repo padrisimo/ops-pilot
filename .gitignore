@@ -1,0 +1,22 @@
+# secrets
+.env
+
+# python / uv
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# runtime state
+sandbox/*.json
+sandbox/*.sqlite
+sandbox/*.sqlite-*
+!sandbox/.gitkeep
+
+# langgraph / os
+.langgraph_api/
+.DS_Store

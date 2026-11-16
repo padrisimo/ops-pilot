@@ -1,0 +1,42 @@
+[
+  {
+    "change_id": "CHG-2001",
+    "service_id": "checkout-api",
+    "type": "deploy",
+    "target": "web@2026.11.14-3",
+    "changed_at": "2026-11-14T13:55:00Z",
+    "changed_by": "ci-bot",
+    "state": "success",
+    "summary": "Lowered the pricing-api client timeout to 800ms and reduced the retry budget."
+  },
+  {
+    "change_id": "CHG-2002",
+    "service_id": "pricing-api",
+    "type": "feature_flag",
+    "target": "new-pricing",
+    "changed_at": "2026-11-14T16:10:00Z",
+    "changed_by": "catalog-oncall",
+    "state": "enabled",
+    "summary": "Enabled the new-pricing flag for 100% of traffic."
+  },
+  {
+    "change_id": "CHG-2003",
+    "service_id": "search-api",
+    "type": "job",
+    "target": "log-rotation",
+    "changed_at": "2026-11-14T11:00:00Z",
+    "changed_by": "scheduler",
+    "state": "failed",
+    "summary": "Nightly log rotation failed and disk space was not reclaimed."
+  },
+  {
+    "change_id": "CHG-2004",
+    "service_id": "checkout-api",
+    "type": "deploy",
+    "target": "web@2026.11.13-9",
+    "changed_at": "2026-11-13T10:00:00Z",
+    "changed_by": "ci-bot",
+    "state": "success",
+    "summary": "Routine dependency update; no timeout changes."
+  }
+]
