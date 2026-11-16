@@ -15,7 +15,11 @@ from langgraph.types import Command
 
 from .context import AppContext, default_context
 from .model import build_model
+from .sandbox import DEFAULT_SANDBOX_DIR
 from .tools import build_tools
+
+DEFAULT_CHECKPOINT_DB = DEFAULT_SANDBOX_DIR / "checkpoints.sqlite"
+MEMORY_SENTINELS = {"memory", "in-memory", "none", "off"}
 
 SYSTEM_PROMPT = """You are OpsPilot, an SRE incident commander.
 
@@ -51,12 +55,26 @@ Safety rules:
 """
 
 
-def build_checkpointer():
-    db_path = os.getenv("OPS_PILOT_CHECKPOINT_DB")
-    if not db_path:
+def checkpoint_db_path(db_path: str | Path | None = None) -> Path:
+    """Resolve the checkpoint location without creating it."""
+    value = db_path if db_path is not None else os.getenv("OPS_PILOT_CHECKPOINT_DB")
+    if value is None or str(value).strip() == "":
+        return DEFAULT_CHECKPOINT_DB
+    return Path(value).expanduser()
+
+
+def build_checkpointer(db_path: str | Path | None = None):
+    """Build the default SQLite checkpointer, or MemorySaver when requested.
+
+    Set ``OPS_PILOT_CHECKPOINT_DB=memory`` to opt out of persistence (useful for
+    ephemeral runs and tests). The default is ``sandbox/checkpoints.sqlite``, so
+    conversations and pending approvals survive a restart.
+    """
+    value = db_path if db_path is not None else os.getenv("OPS_PILOT_CHECKPOINT_DB")
+    if value is not None and str(value).strip().lower() in MEMORY_SENTINELS:
         return MemorySaver()
 
-    path = Path(db_path)
+    path = checkpoint_db_path(db_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(path, check_same_thread=False)
     from langgraph.checkpoint.sqlite import SqliteSaver

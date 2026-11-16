@@ -8,6 +8,7 @@ from langgraph.prebuilt import ToolNode
 from langgraph.types import Command
 
 from ops_pilot.context import AppContext
+from ops_pilot.graph import build_checkpointer
 from ops_pilot.tools import build_tools
 
 
@@ -165,3 +166,29 @@ def test_apply_unknown_draft_does_not_interrupt(ctx: AppContext) -> None:
     assert _pending(graph, config) == []
     assert _payload(result["messages"][-1])["status"] == "error"
     assert "RMD-9999" in _payload(result["messages"][-1])["error"]
+
+
+def test_pending_approval_survives_a_restart(ctx: AppContext, tmp_path) -> None:
+    draft = ctx.sandbox.propose_remediation(
+        ctx.data,
+        incident_id="INC-1001",
+        action="rollback_deploy",
+        target="web@2026.11.14-3",
+        reason="Deploy preceded the latency spike.",
+    )
+    db = tmp_path / "checkpoints.sqlite"
+    config = {"configurable": {"thread_id": "restart"}}
+
+    first = _tool_graph(ctx, "apply_remediation", build_checkpointer(db))
+    first.invoke(_call("apply_remediation", {"draft_id": draft["draft_id"]}), config)
+    assert _pending(first, config)
+
+    # New connection and graph instance: the approval is still pending on disk.
+    second = _tool_graph(ctx, "apply_remediation", build_checkpointer(db))
+    assert _pending(second, config)
+    assert ctx.sandbox.read_ledger() == []
+
+    second.invoke(Command(resume="approve"), config)
+
+    assert ctx.sandbox.read_ledger()[0]["draft_id"] == draft["draft_id"]
+    assert ctx.sandbox.get_draft(draft["draft_id"])["status"] == "applied"
