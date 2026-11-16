@@ -11,6 +11,7 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 from .context import AppContext, default_context
 from .graph import build_graph, pending_interrupts, resume, thread_config
+from .model import DEFAULT_MODEL
 
 
 @st.cache_resource
@@ -90,7 +91,7 @@ def _sidebar(ctx: AppContext) -> str | None:
             st.rerun()
 
         st.divider()
-        st.caption(f"Model: `{os.getenv('MODEL', 'openai:gpt-4o-mini')}`")
+        st.caption(f"Model: `{os.getenv('MODEL', DEFAULT_MODEL)}`")
         with st.expander("Audit log"):
             st.json(ctx.sandbox.read_audit(limit=20))
         st.caption("Changes are sandbox-only. data/ is read-only.")
