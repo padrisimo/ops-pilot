@@ -1,5 +1,10 @@
 # OpsPilot
 
+[![CI](https://github.com/padrisimo/ops-pilot/actions/workflows/ci.yml/badge.svg)](https://github.com/padrisimo/ops-pilot/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-1.x-1c3d5a.svg)](https://langchain-ai.github.io/langgraph/)
+
 **An approval-gated SRE incident commander built with LangGraph.**
 
 OpsPilot investigates a production incident, shows the evidence that supports (or
@@ -33,6 +38,17 @@ sandbox ledger                      nothing written
       ▼
 rollback_remediation ──► interrupt() ──► reversal + audit entry
 ```
+
+## Demo
+
+![OpsPilot CLI walkthrough](docs/assets/cli-demo.gif)
+
+The walkthrough covers the full loop: evidence, a pending draft, human approval, the
+append-only ledger and the audit event. The last screen shows `INC-1005`, where the
+agent refuses to invent a cause and asks for more context instead.
+
+The clip is rendered from the deterministic analysis and sandbox outputs
+(`scripts/render_cli_demo.py`), so it stays reproducible without an API key.
 
 ## Why this project
 
@@ -168,6 +184,7 @@ src/ops_pilot/
 
 langgraph.json       LangGraph CLI / Studio configuration
 langgraph_app.py     API entrypoint without a local checkpointer
+scripts/render_cli_demo.py  README CLI demo generator
 ```
 
 The graph is hand-built rather than prebuilt:
@@ -235,9 +252,11 @@ uv run pytest
 ```
 
 The suite covers data loading, analysis for all five incidents, sandbox validation
-and idempotency, SQLite checkpoint persistence, and the real approval flow: a
-minimal `StateGraph` with `ToolNode` invokes the tools, pauses on `interrupt()`, and
-resumes with `Command(...)` — no LLM or API key required.
+and idempotency, SQLite checkpoint persistence, model configuration, and the real
+approval flow: a minimal `StateGraph` with `ToolNode` invokes the tools, pauses on
+`interrupt()`, and resumes with `Command(...)` — no LLM or API key required.
+
+CI runs the same suite plus `langgraph validate` on every push and pull request.
 
 ## Design notes
 
